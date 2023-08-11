@@ -6,7 +6,7 @@
 
 \title{COBYQA}
 \subtitle{A derivative-free trust-region SQP method for nonlinearly constrained optimization}
-\date{ICNONLA 2023, Taiyuan, China, 2023}
+\date{ICNONLA 2023, Taiyuan, Shanxi, China, 2023}
 \author{\href{https://www.tomragonneau.com}{\textbf{Tom M. Ragonneau}} \and \href{https://www.zhangzk.net}{Zaikun Zhang}}
 \institute{
     Department of Applied Mathematics\\
@@ -23,7 +23,7 @@
 
 \maketitle
 
-\begin{frame}{Derivative-free optimization}
+\begin{frame}{Derivative-free optimization (DFO)}
     \begin{itemize}
         \item Minimize a function $\obj$ using \alert{function values} but no derivatives.
         \item $\obj$ can be a \alert{black box} resulting from experiments or simulations.
@@ -37,21 +37,18 @@
             \end{tikzpicture}
         \end{center}
         \item $\obj$ may be smooth, but $\gradobj$ \alert{cannot} be numerically evaluated.
-        \item Evaluations of $\obj$ can be \alert{noisy} and \alert{expensive}.
-        \begin{center}
-            \medskip
-            \begin{tikzpicture}
-                \begin{axis}[scale only axis=true,width=.5\textwidth,height=.25\textwidth,legend pos=outer north east,legend cell align=left,xmin=-2,xmax=2,xlabel={$x$},ylabel={$f(x)$}]
-                    \addplot[no markers,densely dashed,semithick,smooth,samples=50] {x*x};
-                    \addplot[no markers,semithick,DarkOrchid,samples=500] {x*x+.25*rand};
-                    \legend{Fairy tale,Reality}
-                \end{axis}
-            \end{tikzpicture}
-        \end{center}
+        \item Evaluations of $\obj$ are \alert{expensive}.
+        \item Closely related to
+        \begin{itemize}
+            \item blackbox optimization,
+            \item zeroth-order optimization,
+            \item simulation-based optimization, and
+            \item gradient-free optimization.
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{An example of a derivative-free optimization problem}
+\begin{frame}{An example of a DFO problem}
     \begin{center}
         \begin{tikzpicture}[scale=.9, every node/.style={transform shape}]
             \uncover<2>{\draw[pattern=north west lines,pattern color=DarkCaramel!40,rounded corners=5pt] (8,3) rectangle (11,4.5);}
@@ -89,7 +86,10 @@
         \medskip
 
         \begin{block}{Hyperparameter tuning problem}
-            How to choose the \alert{hyperparameters} of a machine learning model?
+            \begin{itemize}
+                \item How to choose the \alert{hyperparameters}?
+                \item An idea: optimizing the \alert{testing accuracy}. What is the gradient?
+            \end{itemize}
         \end{block}
     \end{center}
 \end{frame}
@@ -116,7 +116,7 @@
             \item The bound constraints are \alert{unrelaxable}:
             \begin{itemize}
                 \item They often represent \alert{inalienable} restrictions.
-                \item $\obj$ or $\cub$ may not be defined outside of the bounds.
+                \item $\obj$, $\cub$, or $\ceq$ may not be well-defined outside the bounds.
             \end{itemize}
         \end{itemize}
     \end{block}
@@ -232,8 +232,8 @@
         \end{align*}
         \item The tangential step $\tstep[k]$ solves approximately
         \begin{align*}
-            \min_{\step \in \R^n}   & \quad \big[ \gradobjm[k] ( \iter[k] ) + \hesslagm[k][\iter][\iter] ( \iter[k], \lmub[k] ) \nstep[k] \big]^{\T} \step + \frac{1}{2} \step^{\T} \hesslagm[k][\iter][\iter] ( \iter[k], \lmub[k] ) \step\\
-            \textrm{s.t.}           & \quad \jaccubm[k] ( \iter[k] )^{\T} \step \le \alert{\only<1>{0}\only<2>{[\cubm[k](\iter[k]) + \jaccubm[k] ( \iter[k] ) \nstep[k]]^-}},\\
+            \min_{\step \in \R^n}   & \quad \transpose{\big[ \gradobjm[k] ( \iter[k] ) + \hesslagm[k][\iter][\iter] ( \iter[k], \lmub[k] ) \nstep[k] \big]} \step + \frac{1}{2} \transpose{\step} \hesslagm[k][\iter][\iter] ( \iter[k], \lmub[k] ) \step\\
+            \textrm{s.t.}           & \quad \jaccubm[k] ( \iter[k] ) \step \le \alert{\only<1>{0}\only<2>{[\cubm[k](\iter[k]) + \jaccubm[k] ( \iter[k] ) \nstep[k]]^-}},\\
                                     & \quad \xl \le \iter[k] + \nstep[k] + \step \le \xu,\\
                                     & \quad \norm{\nstep[k] + \step} \le \rad[k].
         \end{align*}
@@ -256,7 +256,7 @@
 
     \begin{itemize}
         \item We \alert{recycle} $\xpt[k + 1] = ( \xpt[k] \cup \set{\iter[k] + \step[k]} ) \setminus {\bar{y}}$ for some bad point $\bar{y} \in \xpt[k]$.
-        \item To compute~$\objm[k]$, we only need to solve a \alert{linear} system.
+        \item To compute $\objm[k]$, we only need to solve a \alert{linear} system.
     \end{itemize}
 
     Some alternatives: \cite{Conn_Scheinberg_Toint_1997a,Conn_Scheinberg_Toint_1997b,Conn_Scheinberg_Toint_1998,Wild_2008,Bandeira_Scheinberg_Vicente_2012,Zhang_2014,Xie_Yuan_2023}.
@@ -283,25 +283,6 @@
     \medskip
 
     These questions (and many more) are addressed in \cite{Ragonneau_2022}.
-\end{frame}
-
-\begin{frame}{Management of the trust-region radius}
-    \begin{block}{We maintain $\rad[k]$ and a lower bound $\radlb[k] \le \rad[k]$}
-        \begin{itemize}
-            \item The lower bound $\radlb[k]$ is \alert{never} increased.
-            \item We update $\rad[k]$ in the usual way, but we \alert{always} have $\rad[k] \ge \radlb[k]$.
-            \item This strategy is adapted from \alert{Powell}'s methods (e.g., NEWUOA).
-        \end{itemize}
-    \end{block}
-
-    The value of $\radlb[k]$ is an indicator of the current \alert{resolution}.
-
-    \begin{itemize}
-        \item Without $\rad[k] \ge \radlb[k]$, the value of $\rad[k]$ may become too small.
-        \item It prevents the interpolation points from \alert{concentrating} too much.
-        \item The value of $\radlb[k]$ is only \alert{decreased} when necessary.
-        \item Hence, stopping when $\radlb[k] \le \radlb[\textrm{end}]$ is \alert{reasonable} ($\radlb[\textrm{end}] > 0$).
-    \end{itemize}
 \end{frame}
 
 \begin{frame}{A crucial difficulty in the implementation}
@@ -333,15 +314,192 @@
         \end{center}
 
         \begin{itemize}
-            \item The iterates~$\set{x^k}$ likely lie on a particular path.
+            \item The iterates $\set{x^k}$ likely lie on a particular path.
             \item The modeling process does \alert{not} ponder the optimization problem.
         \end{itemize}
     \end{block}
 \end{frame}
 
+\begin{frame}{Management of the trust-region radius}
+    \begin{block}{We maintain $\rad[k]$ and a lower bound $\radlb[k] \le \rad[k]$}
+        \begin{itemize}
+            \item The lower bound $\radlb[k]$ is \alert{never} increased.
+            \item We update $\rad[k]$ in the usual way, but we \alert{always} have $\rad[k] \ge \radlb[k]$.
+            \item This strategy is adapted from \alert{Powell}'s methods (e.g., NEWUOA).
+        \end{itemize}
+    \end{block}
+
+    The value of $\radlb[k]$ is an indicator of the current \alert{resolution}.
+
+    \begin{itemize}
+        \item Without $\rad[k] \ge \radlb[k]$, the value of $\rad[k]$ may become too small.
+        \item It prevents the interpolation points from \alert{concentrating} too much.
+        \item The value of $\radlb[k]$ is only \alert{decreased} when necessary.
+        \item Hence, stopping when $\radlb[k] \le \radlb[\textrm{end}]$ is \alert{reasonable} ($\radlb[\textrm{end}] > 0$).
+    \end{itemize}
+\end{frame}
+
 \section{Implementation and experiments}
 
+\begin{frame}[fragile]{The Python implementation of COBYQA}
+    \begin{block}{From \cite{Powell_2006}}
+        \begin{quoting}
+            \small%
+            The development of NEWUOA has taken nearly \alert{three years}.
+            The work was very \alert{frustrating} [\dots]
+        \end{quoting}
+        The development of COBYQA was \alert{not easier}.
+    \end{block}
+
+    \medskip
+
+    We implemented COBYQA in \alert{Python} and made it publicly available.
+
+    \medskip
+
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \begin{center}
+                \qrcode{https://www.cobyqa.com}\\[1ex]
+                \href{https://www.cobyqa.com}{\texttt{www.cobyqa.com}}
+            \end{center}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{block}{Installation via PyPI}
+                \texttt{pip install cobyqa}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Comparing COBYQA with existing DFO solvers}
+    \begin{itemize}
+        \item We assess the quality of points based on the merit function
+        \begin{equation*}
+            \varphi(\iter) =
+            \begin{cases}
+                \obj(\iter)                           & \text{if $v_{\infty}(x) \le 10^{-10}$,}\\
+                \infty                                & \text{if $v_{\infty}(x) \ge 10^{-5}$,}\\
+                \obj(\iter) + 10^5 v_{\infty}(\iter)  & \text{otherwise,}
+            \end{cases}
+        \end{equation*}
+        where $v_{\infty}$ denotes the $\ell_{\infty}$-constraint violation.
+        \item The problems are from the \alert{CUTEst} set.
+        \item The problems are of \alert{dimension} at most \num{50} (this is \alert{not} small).
+        \item Problems with \alert{unrelaxable} bounds replace $\obj$ with
+        \begin{equation*}
+            \tilde{\obj}(x) =
+            \begin{cases}
+                \obj(x) & \text{if $\xl \le x \le \xu$,}\\
+                \infty  & \text{otherwise.}
+            \end{cases}
+        \end{equation*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Performance of the new Byrd-Omojokun approach}
+    We compare the new and the standard Byrd-Omojokun approaches
+    \begin{itemize}
+        \item on \alert{linearly} and \alert{nonlinearly constrained} problems,
+        \item in the implementation of COBYQA.
+    \end{itemize}
+
+    \smallskip
+
+    To do.
+
+    % \begin{center}
+    %     \drawprofiles{{"New","Standard"}}{plain-1-50-perf-byrd-omojokun-nlqo.csv}{4}
+    % \end{center}
+\end{frame}
+
+\begin{frame}{Performance on linearly constrained problems}
+    We compare COBYQA, LINCOA, and COBYLA
+    \begin{itemize}[<+->]
+        \item on \alert{linearly constrained} problems,
+        \item with \alert{inviolable} bounds.
+    \end{itemize}
+
+    \smallskip
+
+    To do.
+
+    % \begin{center}
+    %     \only<1>{\drawprofiles{{"COBYQA","LINCOA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-lincoa-nl.csv}{4}}%
+    %     \only<2>{\drawprofiles{{"COBYQA","LINCOA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-lincoa-nl-bounds.csv}{4}}
+    % \end{center}
+\end{frame}
+
+\begin{frame}{Performance on nonlinearly constrained problems}
+    We compare COBYQA and COBYLA
+    \begin{itemize}[<+->]
+        \item on \alert{nonlinearly constrained} problems,
+        \item with \alert{inviolable} bounds.
+    \end{itemize}
+
+    \smallskip
+
+    To do.
+
+    % \begin{center}
+    %     \only<1>{\drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-qo.csv}{4}}%
+    %     \only<2>{\drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-qo-bounds.csv}{4}}
+    % \end{center}
+\end{frame}
+
+\begin{frame}{Comparison with COBYLA}
+    We compare COBYQA and COBYLA on \alert{all} ????? problems.
+
+    \bigskip
+
+    To do.
+
+    % \begin{center}
+    %     \drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-ubnlqo.csv}{4}
+    % \end{center}
+\end{frame}
+
 \section{Conclusion}
+
+\begin{frame}{Conclusion}
+
+    \begin{itemize}
+        \item COBYQA already received \alert{positive} feedback from practitioners.
+        \item It will soon be included in
+        \begin{itemize}
+            \item \href{https://www.pdfo.net}{PDFO} as a successor for COBYLA, and
+            \item \href{https://gemseo.readthedocs.io}{GEMSEO}, an \alert{industrial} software package for MDO.
+        \end{itemize}
+        \item We will soon investigate the convergence properties of COBYQA.
+    \end{itemize}
+
+    For more information, visit:
+
+    \medskip
+
+    \begin{columns}
+        \begin{column}{\textwidth/3}
+            \begin{center}
+                \qrcode{https://www.cobyqa.com}\\[1ex]
+                \href{https://www.cobyqa.com}{COBYQA}
+            \end{center}
+        \end{column}
+        \begin{column}{\textwidth/3}
+            \begin{center}
+                \qrcode{https://www.tomragonneau.com}\\[1ex]
+                \href{https://www.tomragonneau.com}{My website}
+            \end{center}
+        \end{column}
+        \begin{column}{\textwidth/3}
+            \begin{center}
+                \qrcode{https://tomragonneau.com/documents/thesis.pdf}\\[1ex]
+                \href{https://tomragonneau.com/documents/thesis.pdf}{My thesis}
+            \end{center}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\appendix
 
 \begin{frame}[allowframebreaks]{References}
     \bibliography{\bibfile}
