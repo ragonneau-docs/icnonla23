@@ -4,6 +4,17 @@
 \usepackage{makecell}
 \usetikzlibrary{patterns}
 
+% Performance profiles
+\usepackage{xstring}
+\newcommand{\drawprofiles}[3]{%
+    \def\selectsolvers{#1}%
+    \def\selectcsv{figures/#2}%
+    \def\selectprofile{#3}%
+    \def\selectxlabel{Performance ratios}%
+    \def\selectylabel{Performance profiles ($\tau = 10^{-#3}$)}%
+    \input{figures/profiles.tex}%
+}
+
 \title{COBYQA}
 \subtitle{A derivative-free trust-region SQP method for nonlinearly constrained optimization}
 \date{ICNONLA 2023, Taiyuan, Shanxi, China, 2023}
@@ -83,7 +94,7 @@
         \end{tikzpicture}
 
         \pause
-        \medskip
+        \smallskip
 
         \begin{block}{Hyperparameter tuning problem}
             \begin{itemize}
@@ -406,11 +417,9 @@
 
     \smallskip
 
-    To do.
-
-    % \begin{center}
-    %     \drawprofiles{{"New","Standard"}}{plain-1-50-perf-byrd-omojokun-nlqo.csv}{4}
-    % \end{center}
+    \begin{center}
+        \drawprofiles{{"New","Standard"}}{plain-1-50-perf-byrd-omojokun-nlqo.csv}{4}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Performance on linearly constrained problems}
@@ -422,12 +431,10 @@
 
     \smallskip
 
-    To do.
-
-    % \begin{center}
-    %     \only<1>{\drawprofiles{{"COBYQA","LINCOA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-lincoa-nl.csv}{4}}%
-    %     \only<2>{\drawprofiles{{"COBYQA","LINCOA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-lincoa-nl-bounds.csv}{4}}
-    % \end{center}
+    \begin{center}
+        \only<1>{\drawprofiles{{"COBYQA","LINCOA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-lincoa-nl.csv}{4}}%
+        \only<2>{\drawprofiles{{"COBYQA","LINCOA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-lincoa-nl-bounds.csv}{4}}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Performance on nonlinearly constrained problems}
@@ -439,24 +446,20 @@
 
     \smallskip
 
-    To do.
-
-    % \begin{center}
-    %     \only<1>{\drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-qo.csv}{4}}%
-    %     \only<2>{\drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-qo-bounds.csv}{4}}
-    % \end{center}
+    \begin{center}
+        \only<1>{\drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-qo.csv}{4}}%
+        \only<2>{\drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-qo-bounds.csv}{4}}
+    \end{center}
 \end{frame}
 
 \begin{frame}{Comparison with COBYLA}
-    We compare COBYQA and COBYLA on \alert{all} ????? problems.
+    We compare COBYQA and COBYLA on \alert{all} 388 problems.
 
     \bigskip
 
-    To do.
-
-    % \begin{center}
-    %     \drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-ubnlqo.csv}{4}
-    % \end{center}
+    \begin{center}
+        \drawprofiles{{"COBYQA","COBYLA"}}{plain-1-50-perf-cobyla-cobyqa-ubnlqo.csv}{4}
+    \end{center}
 \end{frame}
 
 \section{Conclusion}
