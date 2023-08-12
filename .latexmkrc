@@ -9,4 +9,4 @@ $dvi_mode = 0;
 # Run biber to regenerate the bbl files
 $bibtex_use = 2;
 
-$clean_ext = "nav run.xml snm synctex.gz";
+$clean_ext = "nav run.xml snm synctex.gz vrb";
