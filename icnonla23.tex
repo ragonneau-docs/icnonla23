@@ -3,6 +3,7 @@
 \documentclass[optimization]{common/talk}
 \usepackage{makecell}
 \usetikzlibrary{patterns}
+\addbibresource{\bibfile}
 
 % Performance profiles
 \usepackage{xstring}
@@ -49,13 +50,14 @@
         \end{center}
         \item $\obj$ may be smooth, but $\gradobj$ \alert{cannot} be numerically evaluated.
         \item Evaluations of $\obj$ are \alert{expensive}.
-        \item Closely related to
-        \begin{itemize}
-            \item blackbox optimization,
-            \item zeroth-order optimization,
-            \item simulation-based optimization, and
-            \item gradient-free optimization.
-        \end{itemize}
+        \item Closely related terms:
+        \begin{center}
+            \itshape
+            blackbox optimization\\
+            zeroth-order optimization\\
+            simulation-based optimization\\
+            gradient-free optimization
+        \end{center}
     \end{itemize}
 \end{frame}
 
@@ -99,7 +101,8 @@
         \begin{block}{Hyperparameter tuning problem}
             \begin{itemize}
                 \item How to choose the \alert{hyperparameters}?
-                \item An idea: optimizing the \alert{testing accuracy}. What is the gradient?
+                \item \emph{An idea}: optimizing the \alert{testing accuracy}.
+                What is the \alert{gradient}?
             \end{itemize}
         \end{block}
     \end{center}
@@ -122,7 +125,7 @@
     \begin{block}{}
         \begin{itemize}
             \item We omit the equality constraints for simplicity.
-            \item COBYQA aims at being a \alert{successor} to COBYLA \cite{Powell_1994}.
+            \item COBYQA aims at being a \alert{successor} to COBYLA \parencite{Powell_1994}.
             \item We \alert{implement} COBYQA into a Python solver.
             \item The bound constraints are \alert{unrelaxable}:
             \begin{itemize}
@@ -229,7 +232,7 @@
     \end{columns}
 
     \uncover<9>{The feasible region for $\tstep[k]$ is \alert{wider} in the new approach.}
-    \footnotetext{See \cite[\S 15.4.4]{Conn_Gould_Toint_2000}.}
+    \footnotetext{See \textcite[\S 15.4.4]{Conn_Gould_Toint_2000}.}
 \end{frame}
 
 \begin{frame}{A new Byrd-Omojokun approach (cont'd)}
@@ -256,7 +259,7 @@
 \begin{frame}{Interpolation-based quadratic models}
     COBYQA builds \alert{quadratic} models of $\obj$ and $\cub$ by interpolation.
 
-    \begin{block}{Derivative-free symmetric Broyden update \cite{Powell_2004}}
+    \begin{block}{Derivative-free symmetric Broyden update \parencite{Powell_2004}}
         The $k$th model $\objm[k]$ of $\obj$ solves
         \begin{align*}
             \min_{Q \in \mathcal{Q}_n}  & \quad \norm[\big][fro]{\nabla^2 \objm[k - 1] - \nabla^2 Q}\\
@@ -270,7 +273,7 @@
         \item To compute $\objm[k]$, we only need to solve a \alert{linear} system.
     \end{itemize}
 
-    Some alternatives: \cite{Conn_Scheinberg_Toint_1997a,Conn_Scheinberg_Toint_1997b,Conn_Scheinberg_Toint_1998,Wild_2008,Bandeira_Scheinberg_Vicente_2012,Zhang_2014,Xie_Yuan_2023}.
+    \underline{Some alternatives}: \textcite{Conn_Scheinberg_Toint_1997a,Conn_Scheinberg_Toint_1997b,Conn_Scheinberg_Toint_1998,Wild_2008,Custodio_Rocha_Vicente_2010,Bandeira_Scheinberg_Vicente_2012,Zhang_2014,Xie_Yuan_2023}.
 \end{frame}
 
 \section{Many difficulties arise}
@@ -293,13 +296,13 @@
 
     \medskip
 
-    These questions (and many more) are addressed in \cite{Ragonneau_2022}.
+    These questions (and many more) are addressed in \textcite{Ragonneau_2022}.
 \end{frame}
 
 \begin{frame}{A crucial difficulty in the implementation}
     \begin{itemize}
         \item What if the interpolation set $\xpt[k]$ is almost nonpoised?\\
-        \textcolor{FernGreen}{A well-known approach: a geometry-improving mechanism.\footnote{See \cite{Conn_Scheinberg_Vicente_2008a,Conn_Scheinberg_Vicente_2008b,Fasano_Morales_Nocedal_2009}.}}
+        \textcolor{FernGreen}{A well-known approach: a geometry-improving mechanism.\footnote{See \textcite{Conn_Scheinberg_Vicente_2008a,Conn_Scheinberg_Vicente_2008b,Fasano_Morales_Nocedal_2009}.}}
     \end{itemize}
 
     \medskip
@@ -353,7 +356,7 @@
 \section{Implementation and experiments}
 
 \begin{frame}[fragile]{The Python implementation of COBYQA}
-    \begin{block}{From \cite{Powell_2006}}
+    \begin{block}{From \textcite{Powell_2006}}
         \begin{quoting}
             \small%
             The development of NEWUOA has taken nearly \alert{three years}.
@@ -362,25 +365,29 @@
         The development of COBYQA was \alert{not easier}.
     \end{block}
 
-    \medskip
-
     We implemented COBYQA in \alert{Python} and made it publicly available.
 
-    \medskip
+    \begin{center}
+        \qrcode{https://www.cobyqa.com}\\[1ex]
+        \href{https://www.cobyqa.com}{\texttt{www.cobyqa.com}}
+    \end{center}
 
-    \begin{columns}
-        \begin{column}{0.4\textwidth}
-            \begin{center}
-                \qrcode{https://www.cobyqa.com}\\[1ex]
-                \href{https://www.cobyqa.com}{\texttt{www.cobyqa.com}}
-            \end{center}
-        \end{column}
-        \begin{column}{0.6\textwidth}
-            \begin{block}{Installation via PyPI}
-                \texttt{pip install cobyqa}
-            \end{block}
-        \end{column}
-    \end{columns}
+    \begin{block}{}
+        \texttt{\$ pip install cobyqa}
+    \end{block}
+
+    % \underline{Installation}: \texttt{pip install cobyqa}
+
+    % \begin{columns}
+    %     \begin{column}{0.4\textwidth}
+    %         \begin{center}
+    %             \qrcode{https://www.cobyqa.com}\\[1ex]
+    %             \href{https://www.cobyqa.com}{\texttt{www.cobyqa.com}}
+    %         \end{center}
+    %     \end{column}
+    %     \begin{column}{0.6\textwidth}
+    %     \end{column}
+    % \end{columns}
 \end{frame}
 
 \begin{frame}{Comparing COBYQA with existing DFO solvers}
@@ -504,8 +511,8 @@
 
 \appendix
 
-\begin{frame}[allowframebreaks]{References}
-    \bibliography{\bibfile}
+\begin{frame}[t,allowframebreaks]{References}
+    \printbibliography[heading=none]
 \end{frame}
 
 \end{document}
