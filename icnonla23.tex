@@ -269,7 +269,7 @@
     \end{block}
 
     \begin{itemize}
-        \item We \alert{recycle} $\xpt[k + 1] = ( \xpt[k] \cup \set{\iter[k] + \step[k]} ) \setminus {\bar{y}}$ for some bad point $\bar{y} \in \xpt[k]$.
+        \item We \alert{recycle} $\xpt[k + 1] = ( \xpt[k] \cup \set{\iter[k] + \step[k]} ) \setminus \set{\bar{y}}$ for some bad point $\bar{y} \in \xpt[k]$.
         \item To compute $\objm[k]$, we only need to solve a \alert{linear} system.
     \end{itemize}
 
@@ -339,7 +339,7 @@
         \begin{itemize}
             \item The lower bound $\radlb[k]$ is \alert{never} increased.
             \item We update $\rad[k]$ in the usual way, but we \alert{always} have $\rad[k] \ge \radlb[k]$.
-            \item This strategy is adapted from \alert{Powell}'s methods (e.g., NEWUOA).
+            \item This strategy is adapted from \textcite{Powell_2006,Powell_2009} and LINCOA.
         \end{itemize}
     \end{block}
 
