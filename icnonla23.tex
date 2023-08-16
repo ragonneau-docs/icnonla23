@@ -145,26 +145,30 @@
 \begin{frame}{A derivative-free trust-region SQP method}
     COBYQA iteratively solves the trust-region SQP subproblem
     \begin{align*}
-        \min_{\step \in \R^n}   & \quad \transpose{\only<1>{\gradobj}\only<2>{\alert{\gradobjm[k]}} ( \iter[k] )} \step + \frac{1}{2} \transpose{\step} \only<1>{\hesslag[\iter][\iter]}\only<2>{\alert{\hesslagm[k][\iter][\iter]}} ( \iter[k], \lmub[k] ) \step\\
-        \textrm{s.t.}           & \quad \only<1>{\cub}\only<2>{\alert{\cubm[k]}} ( \iter[k] ) + \only<1>{\jaccub}\only<2>{\alert{\jaccubm[k]}} ( \iter[k] ) \step \le 0,\\
+        \min_{\step \in \R^n}   & \quad \transpose{\only<1>{\gradobj}\only<2->{\alert{\gradobjm[k]}} ( \iter[k] )} \step + \frac{1}{2} \transpose{\step} \only<1>{\hesslag[\iter][\iter]}\only<2->{\alert{\hesslagm[k][\iter][\iter]}} ( \iter[k], \lmub[k] ) \step\\
+        \textrm{s.t.}           & \quad \only<1>{\cub}\only<2->{\alert{\cubm[k]}} ( \iter[k] ) + \only<1>{\jaccub}\only<2->{\alert{\jaccubm[k]}} ( \iter[k] ) \step \le 0,\\
                                 & \quad \xl \le \iter[k] + \step \le \xu,\\
                                 & \quad \norm{\step} \le \rad[k],
     \end{align*}
-    with $\only<1>{\lag}\only<2>{\alert{\lagm[k]}} ( \iter, \lmub ) = \only<1>{\obj}\only<2>{\alert{\objm[k]}} ( \iter ) + \transpose{\lmub} \only<1>{\cub}\only<2>{\alert{\cubm[k]}} ( \iter )$\only<2>{, given some models $\objm[k]$ and $\cubm[k]$}.
+    with $\only<1>{\lag}\only<2->{\alert{\lagm[k]}} ( \iter, \lmub ) = \only<1>{\obj}\only<2->{\alert{\objm[k]}} ( \iter ) + \transpose{\lmub} \only<1>{\cub}\only<2->{\alert{\cubm[k]}} ( \iter )$\only<2->{, given some models $\objm[k]$ and $\cubm[k]$}.
 
     \pause
-    \medskip
+    \smallskip
 
     \begin{block}{}
         \begin{itemize}
             \item We only require an approximate solution $\step[k]$.
             \item The solution must satisfy $\xl \le \iter[k] + \step[k] \le \xu$.
-            \item The subproblem may be \alert{infeasible}. What is a solution?
+            \item See \textcite{Schittkowski_Yuan_2011,Yuan_2015}.
         \end{itemize}
     \end{block}
+
+    \pause
+
+    The subproblem may be \alert{infeasible}. What is a solution?
 \end{frame}
 
-\begin{frame}{A new Byrd-Omojokun approach}
+\begin{frame}{A new \citeauthor{Byrd_1987}-\citeauthor{Omojokun_1989} approach}
     We compute $\step[k] = \nstep[k] + \tstep[k]$, where
     \begin{itemize}
         \item the \alert{normal} step $\nstep[k]$ reduces the (possible) constraint violation, and
@@ -235,7 +239,7 @@
     \footnotetext{See \textcite[\S 15.4.4]{Conn_Gould_Toint_2000}.}
 \end{frame}
 
-\begin{frame}{A new Byrd-Omojokun approach (cont'd)}
+\begin{frame}{A new \citeauthor{Byrd_1987}-\citeauthor{Omojokun_1989} approach (cont'd)}
     \alert{\only<1>{Standard}\only<2>{New}} approach:
     \begin{itemize}
         \item The normal step $\nstep[k]$ solves approximately (for some $\zeta < 1$)
@@ -402,7 +406,7 @@
             \end{cases}
         \end{equation*}
         where $v_{\infty}$ denotes the $\ell_{\infty}$-constraint violation.
-        \item The problems are from the \alert{CUTEst} set.
+        \item The problems are from \alert{CUTEst} \parencite{Gould_Orban_Toint_2015}.
         \item The problems are of \alert{dimension} at most \num{50} (this is \alert{not} small).
         \item Problems with \alert{unrelaxable} bounds replace $\obj$ with
         \begin{equation*}
@@ -415,8 +419,8 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Performance of the new Byrd-Omojokun approach}
-    We compare the new and the standard Byrd-Omojokun approaches
+\begin{frame}{Performance of the new \citeauthor{Byrd_1987}-\citeauthor{Omojokun_1989} approach}
+    We compare the new and the standard \citeauthor{Byrd_1987}-\citeauthor{Omojokun_1989} approaches
     \begin{itemize}
         \item on \alert{linearly} and \alert{nonlinearly constrained} problems,
         \item in the implementation of COBYQA.
